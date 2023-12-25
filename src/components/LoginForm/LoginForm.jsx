@@ -1,44 +1,30 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { nanoid } from '@reduxjs/toolkit';
-import { addContact } from '../../redux/contacts/operations';
-import { selectContacts } from '../../redux/contacts/selectors';
+import { useDispatch } from 'react-redux';
+import { logIn } from '../../redux/auth/operations';
 
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const defaultTheme = createTheme();
 
-export const ContactForm = () => {
+export const LoginForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts);
 
   const handleSubmit = e => {
     e.preventDefault();
-
-    const newContactName = e.target.elements.name.value;
-
-    const isContactExist =
-      contacts &&
-      contacts.some(
-        contact => contact.name.toLowerCase() === newContactName.toLowerCase()
-      );
-
-    if (isContactExist) {
-      alert('Contact with this name already exist!');
-      e.target.reset();
-      return;
-    }
-    const newContact = {
-      id: nanoid(),
-      name: e.target.elements.name.value,
-      number: e.target.elements.number.value,
-    };
-    dispatch(addContact(newContact));
-    e.target.reset();
+    const form = e.currentTarget;
+    dispatch(
+      logIn({
+        email: form.elements.email.value,
+        password: form.elements.password.value,
+      })
+    );
+    form.reset();
   };
 
   return (
@@ -53,31 +39,35 @@ export const ContactForm = () => {
             alignItems: 'center',
           }}
         >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}></Avatar>
+          <Typography component="h1" variant="h5">
+            Log in
+          </Typography>
           <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: -8 }}
+            sx={{ mt: 1 }}
           >
             <TextField
               margin="normal"
               required
               fullWidth
-              id="name"
-              label="Name"
-              name="name"
-              autoComplete="none"
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
               autoFocus
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              id="number"
-              label="Number"
-              name="number"
-              autoComplete="none"
-              autoFocus
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
             />
             <Button
               type="submit"
@@ -85,7 +75,7 @@ export const ContactForm = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Add contact
+              Log in
             </Button>
           </Box>
         </Box>

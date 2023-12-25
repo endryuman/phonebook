@@ -1,6 +1,7 @@
 import { ContactItem } from 'components/ContactItem/ContactItem';
 import { useSelector } from 'react-redux';
-import { selectVisibleContacts } from '../../redux/selectors';
+import { selectVisibleContacts } from '../../redux/contacts/selectors';
+import { List, Typography } from '@mui/material';
 
 export const ContactsList = () => {
   const listOfContacts = useSelector(selectVisibleContacts);
@@ -8,13 +9,30 @@ export const ContactsList = () => {
   return (
     <>
       {listOfContacts.length > 0 ? (
-        <ul>
+        <List
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            maxWidth: 360,
+            bgcolor: 'background.paper',
+            position: 'relative',
+            overflow: 'auto',
+            maxHeight: 300,
+            '& ul': { padding: 0 },
+          }}
+          subheader={<li />}
+        >
           {listOfContacts.map(({ id, name, number }) => (
             <ContactItem key={id} id={id} name={name} number={number} />
           ))}
-        </ul>
+        </List>
       ) : (
-        <p>No contact exists</p>
+        <Typography sx={{ paddingTop: 2 }} component="h2" variant="h5">
+          No contact exists
+        </Typography>
       )}
     </>
   );

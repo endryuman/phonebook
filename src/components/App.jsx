@@ -1,46 +1,53 @@
-import { useDispatch, useSelector } from 'react-redux';
-import Section from './Section/Section';
-import { ContactForm } from './ContactForm/ContactForm';
-import { ContactsList } from './ContactsList/ContactsList';
-import { Filter } from './Filter/Filter';
-import {
-  selectContacts,
-  selectError,
-  selectIsLoading,
-} from '../redux/selectors';
-import styles from './Section/Section.module.css';
-import { useEffect } from 'react';
-import { fetchContacts } from '../redux/operations';
+import { Route, Routes } from 'react-router-dom';
+import { Layout } from './Layout';
+import { lazy, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useAuth } from 'hooks';
+import { refreshUser } from '../redux/auth/operations';
+import { RestrictedRoute } from './RestrictedRoute';
+import { PrivateRoute } from './PrivateRoute';
+
+const HomePage = lazy(() => import('../pages/HomePage/HomePage'));
+const RegisterPage = lazy(() => import('../pages/RegisterPage/RegisterPage'));
+const LoginPage = lazy(() => import('../pages/LoginPage/LoginPage'));
+const ContactsPage = lazy(() => import('../pages/ContactsPage/ContactsPage'));
 
 export const App = () => {
-  const contacts = useSelector(selectContacts);
-  const isLoading = useSelector(selectIsLoading);
-  const error = useSelector(selectError);
   const dispatch = useDispatch();
+  const { isRefreshing } = useAuth();
 
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(refreshUser());
   }, [dispatch]);
 
-  return (
-    <div>
-      <Section title="Phonebook">
-        <ContactForm />
-      </Section>
-      {isLoading && !error ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          {contacts && contacts.length > 0 ? (
-            <Section title="Contacts">
-              <Filter />
-              <ContactsList />
-            </Section>
-          ) : (
-            <p className={styles.sectionWrapper}>You don't have contacts</p>
-          )}
-        </>
-      )}
-    </div>
+  return isRefreshing ? (
+    <b>Refreshing user...</b>
+  ) : (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<HomePage />} />
+        <Route
+          path="/register"
+          element={
+            <RestrictedRoute
+              redirectTo="/contacts"
+              component={<RegisterPage />}
+            />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <RestrictedRoute redirectTo="/contacts" component={<LoginPage />} />
+          }
+        />
+        <Route
+          path="/contacts"
+          element={
+            <PrivateRoute redirectTo="/login" component={<ContactsPage />} />
+          }
+        />
+      </Route>
+    </Routes>
   );
 };

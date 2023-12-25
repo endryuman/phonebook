@@ -1,7 +1,7 @@
-import { setFilteredContacts } from '../../redux/filterSlice';
+import { setFilteredContacts } from '../../redux/contacts/filterSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './Filter.module.css';
-import { getFilter } from '../../redux/selectors';
+import { getFilter } from '../../redux/contacts/selectors';
+import { Box, Container, TextField } from '@mui/material';
 
 export const Filter = () => {
   const filterQuery = useSelector(getFilter);
@@ -12,15 +12,21 @@ export const Filter = () => {
   };
 
   return (
-    <div className={styles.filterWrapper}>
-      <label htmlFor="filter">Find contacts by name</label>
-      <input
-        id="filter"
-        type="text"
-        name="filter"
-        value={filterQuery}
-        onChange={showFilteredContacts}
-      />
-    </div>
+    <Container component="main" maxWidth="xs">
+      <Box component="form" noValidate sx={{ mt: 1 }}>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="filter"
+          label="Find contacts by name"
+          name="filter"
+          autoComplete="none"
+          autoFocus
+          value={filterQuery}
+          onChange={showFilteredContacts}
+        />
+      </Box>
+    </Container>
   );
 };
