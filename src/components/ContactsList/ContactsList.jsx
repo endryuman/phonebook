@@ -20,7 +20,7 @@ export const ContactsList = () => {
             bgcolor: 'background.paper',
             position: 'relative',
             overflow: 'auto',
-            maxHeight: 300,
+
             '& ul': { padding: 0 },
           }}
           subheader={<li />}
